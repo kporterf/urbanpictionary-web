@@ -1,0 +1,31 @@
+{
+  "name": "urbanpictionary-web",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "vue": "^1.0.17"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kporterf/urbanpictionary-web.git"
+  },
+  "keywords": [
+    "urban",
+    "pictionary",
+    "dictionary"
+  ],
+  "authors": [
+    "Alex Ordonez <me@ordonezalex.com>",
+    "Katie Porterfield <kporterf@stetson.edu>"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kporterf/urbanpictionary-web/issues"
+  },
+  "homepage": "https://github.com/kporterf/urbanpictionary-web#readme"
+}
