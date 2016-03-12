@@ -1,9 +1,10 @@
 {
   "name": "urbanpictionary-web",
   "version": "0.0.1",
-  "description": "",
+  "description": "A game for the urban illustrator",
   "main": "index.js",
   "dependencies": {
+    "jquery": "^2.2.1",
     "vue": "^1.0.17"
   },
   "devDependencies": {},
