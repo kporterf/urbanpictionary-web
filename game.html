@@ -1,12 +1,51 @@
 <!DOCTYPE>
 <html>
 	<head>
-
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="styles.css">
+		<script src="./node_modules/vue/dist/vue.js"></script>
 	</head>
 
 
 	<body>
+		<div id=gifNum class=picNumber >
+			<h1> "Number" /10 </h1>
+		</div>
 
+		<div id=points class=points>
+			<h1> Points: 9000 </h1>
+		</div>
+
+		<div id=gifContainer class=gif>
+			<img src="http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif" alt="HTML5 Icon" style="width:550px;height:550px;">
+		</div>
+
+		<div id=word>
+			<h1> guessingWord </h1>
+		</div>
+		
+		<div id=letters>
+			<button type="button"> l </button>
+
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		
+		<script>
+			function addButtons()
+			{		
+				var = buttons"";
+				var numButtons = 10;
+
+				for (var i = 0; i < numButtons; i++)
+				{
+					buttons += '<input type="button" id="button_'+i+'" class="mybuttons" value="button'+i+'">';
+				
+				}
+			}
+
+		</script>
 	</body>
 
 

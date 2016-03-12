@@ -1,0 +1,21 @@
+.picNumber {
+	color: red;
+	margin: 30px;
+	align: right;
+
+}
+
+.points {
+	
+	color: blue;
+	margin: 30px;
+	align: left;
+}
+
+.gif {
+	top: 100px;
+	/*display: flex;
+	justify-content: center;
+	align-content=center;
+*/
+}
