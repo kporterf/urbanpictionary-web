@@ -145,6 +145,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Parse
+            Parse.initialize("JIpKf0ovLwoBEZZc4gH2jwcnmISyzPNHhlmXhOf9", "DE0mzYBrTRHxB7QYGPs5iRAQ1YtzaGZgebu4yq7E");
+
             $('#login').modal('show')
         });
 
@@ -302,6 +305,8 @@
                         // Guess is incorrect
                         this.totalPoints -= 10;
                     }
+
+                    this.updateOnlineScore();
                 },
                 success: function () {
                     // Check if this was the last image
@@ -317,6 +322,73 @@
                 },
                 showLeaderboard: function () {
                     $('#leaderboard').modal('show');
+                },
+                updateOnlineScore: function () {
+                    // Find this user in database
+                    var self = this;
+
+                    // Create player class
+                    var Player = Parse.Object.extend("Player");
+
+                    // Create leaderboard class
+                    var Leaderboard = Parse.Object.extend("Leaderboard");
+
+                    // Find Player with this username
+                    var playerQuery = new Parse.Query(Player);
+                    playerQuery.equalTo('userID', self.userID);
+                    playerQuery.find({
+                        success: function (players) {
+                            var player;
+
+                            if (players.length < 1) {
+                                // No players found
+
+                                // Make new player
+                                player = new Player();
+
+                                // User their username
+                                player.set('userID', self.userID);
+
+                                // Save new player
+                                player.save();
+                            } else {
+                                // Found some players
+
+                                // User existing player
+                                player = players[0];
+                            }
+
+                            // Find this player's score
+                            var scoreQuery = new Parse.Query(Leaderboard);
+                            scoreQuery.equalTo('userID', player);
+                            scoreQuery.find({
+                                success: function (scores) {
+                                    var score;
+
+                                    if (scores.length < 1) {
+                                        // No scores found
+
+                                        // Make new score
+                                        score = new Leaderboard();
+
+                                        // Cast score to string for Parse
+                                        score.set('highScore', '' + self.totalPoints);
+
+                                        score.set('userID', player);
+                                    } else {
+                                        // Update existing score
+                                        score = scores[0];
+
+                                        // Cast score to string for Parse
+                                        score.set('highScore', '' + self.totalPoints);
+                                    }
+
+                                    // Save score
+                                    score.save();
+                                }
+                            });
+                        }
+                    })
                 }
             }
         });
