@@ -32,6 +32,14 @@
     <div id="button">
         <button type="button" v-on:click="addHint()"> hints</button>
     </div>
+
+    <div id="dic">
+        <button type="button" v-on:click="showDef()"> Definition</button>
+    </div>
+
+    <div id="def">
+        <h2> {{definition}}</h2>
+    </div>
     <ul id="word" class="list-inline text-capitalize letter-row center-block">
         <li v-for="letter in lettersPicked">
             <input v-on:click="removeFromWord($index)" track-by="_uid" type="button" value="{{ letter.value }}"
@@ -91,7 +99,8 @@
                 currentWord: 'cobra',
                 imagesAvailable: ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif', 'http://i.giphy.com/RIqeTzCELqASY.gif'],
                 hintCount: 0,
-                hintMax: false
+                hintMax: false,
+                definition: ''
             },
             computed: {
                 wordMatches: function () {
@@ -142,6 +151,38 @@
 
                     // Remove letter from letters picked
                     this.lettersPicked.$remove(this.lettersPicked[index]);
+                },
+                showDef: function () {
+
+                    this.definition = "this is a definition";
+                },
+                addHint: function () {
+                    //TODO call to add another picture for hint
+                    maxHint = 2;
+                    console.log("here1");
+
+                    if (this.hintCount >= maxHint && this.hintMax == false) {
+                        console.log("in if");
+                        this.hintMax = true;
+                        this.hintCount = 0;
+                    }
+
+                    console.log(this.hintCount);
+                    if (this.hintMax == true) {
+                        console.log("hit Max");
+                        this.currentImageUrl = this.imagesAvailable[this.hintCount];
+                        this.hintCount++;
+                        if (this.hintCount >= this.imagesAvailable.length - 1)
+                            this.hintCount = 0;
+
+                    }
+                    else {
+                        this.hintCount++;
+                        //TODO change this to pull from database
+                        this.imagesAvailable.push("http://i.giphy.com/JVeaR3I5DWoJW.gif");
+
+                        this.currentImageUrl = this.imagesAvailable[this.hintCount];
+                    }
                 },
                 addHint: function () {
                     //TODO call to add another picture for hint
