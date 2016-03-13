@@ -37,6 +37,10 @@
         </ul>
     </div>
 
+    <div id="button">
+	<button type="button" v-on:click="addHint()"> hints </button>
+    </div>
+
     <div class="winning" v-if="wordMatches">
         You won!
     </div>
@@ -44,7 +48,7 @@
                         <!--<div id="controls">-->
                             <!--<input type="button" v-on:click="shuffle" value="shuffle" class="btn btn-default">-->
                         <!--</div>-->
-</div>
+    </div>
 
 <script src="./bower_components/jquery/dist/jquery.js"></script>
 <script src="./bower_components/bootstrap/dist/js/bootstrap.js"></script>
@@ -73,32 +77,15 @@
                 totalPoints: 100,
                 lettersAvailable: shuffle(['o', 'e', 't', 'b', 'b', 'a', 'r', 'q', 'p', 'm', 'c']),
                 lettersPicked: [],
-                currentWord: 'cobra'
-            },
+                currentWord: 'cobra',
+            	imagesAvailable:  ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif'],
+	 	hintCount: 0,
+		hintFlow: 0
+	 },
             computed: {
                 wordMatches: function () {
-                    return this.lettersPicked.join('') == this.currentWord;
-                }
-            },
-            methods: {
-                addToWord: function (index) {
-                    /**
-                     * Remove from the list of letters available
-                     * Add letter to the guess
-                     */
-
-                    this.lettersPicked.push(this.lettersAvailable[index]);
-                    this.lettersAvailable.splice(index, 1);
-                },
-                removeFromWord: function (index) {
-                    /**
-                     * Remove from the list of letters guessed
-                     * Add letter to the letters available
-                     */
-
-                    this.lettersAvailable.push(this.lettersPicked.splice(index, 1));
-                },
-                guess: function () {
+                    var isCorrect = this.lettersPicked.join('') == this.currentWord;
+                
                     var word = this.lettersPicked.join('');
 
                     if (word == this.currentWord) {
@@ -115,7 +102,66 @@
                     } else {
                         this.totalPoints -= 10;
                     }
-                }
+		    
+		}
+            },
+            methods: {
+                addToWord: function (index) {
+                    /**
+                     * Remove from the list of letters available
+                     * Add letter to the guess
+                     */
+
+                    this.lettersPicked.push(this.lettersAvailable[index]);
+                    this.lettersAvailable.splice(index, 1);
+			
+		    console.log("list: ", this.lettersAvailable);
+		},
+                removeFromWord: function (index) {
+                    /**
+                     * Remove from the list of letters guessed
+                     * Add letter to the letters available
+                     */
+
+                    this.lettersAvailable.push(this.lettersPicked.splice(index, 1));
+                
+		},
+		addHint: function() {
+			//TODO call to add another picture for hint
+			maxHint = 3;
+			console.log("here1");
+			
+			if (this.hintCount == maxHint)
+			{
+					
+			}
+			else
+			{
+				this.hintCount++;
+				//TODO change this to pull from database
+				this.imagesAvailable.push("http://i.giphy.com/JVeaR3I5DWoJW.gif");
+		
+				this.currentImageUrl = this.imagesAvailable[this.hintCount];
+			}
+		}
+                /*,guess: function () {
+                    var word = this.lettersPicked.join('');
+
+                    if (word == this.currentWord) {
+                        this.totalPoints *= 2;
+
+                        // TODO Call success to get next image
+                        // Or end the game (if last image)
+
+                        this.currentImageUrl = 'https://media0.giphy.com/media/feqkVgjJpYtjy/giphy.gif';
+
+                        // TODO Reset the letters guessed
+                        this.lettersPicked = [];
+                        this.lettersAvailable = shuffle(['d', 'e', 'r', 'w', 't', 'd', 'i', 'd', 'l', 'o', 'e']);
+                    } else {
+                        this.totalPoints -= 10;
+                    }
+                }*/
             }
         });
     })();
