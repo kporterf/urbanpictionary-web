@@ -145,30 +145,16 @@
 	}
 	
 	document.addEventListener('DOMContentLoaded', function () {
-		$('#myModal').modal('show')
+		$('#login').modal('show');
 	});
-	function pullWord(){
-			$.ajax({
-				url: 'http://urbanpic.mangohacks.com/',
-				type: "GET",
-				
-				}).done(function (data)
-				{
-					console.log("data", data);
-				
-			});
-		
-		
-		};
         
-	pullWord();
 	new Vue({
             el: '#app',
             data: {
                 currentImageUrl: 'http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif',
                 currentImageIndex: 1,
                 totalImageCount: 10,
-                totalPoints: 100,
+                totalPoints: 150,
                 lettersAvailable: shuffle([{value: 'o', _uid: Math.random()}, {value: 'e', _uid: Math.random()},
                     {value: 't', _uid: Math.random()}, {value: 'b', _uid: Math.random()},
                     {value: 'b', _uid: Math.random()}, {value: 'a', _uid: Math.random()},
@@ -176,7 +162,7 @@
                     {value: 'p', _uid: Math.random()}, {value: 'c', _uid: Math.random()}
                 ]),
                 lettersPicked: [],
-                currentWord: 'cobra',
+                currentWord: "test",
                 imagesAvailable: ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif', 'http://i.giphy.com/RIqeTzCELqASY.gif'],
                 hintCount: 0,
                 hintMax: false,
@@ -188,15 +174,58 @@
                     {'name': 'APO', highscore: 1337},
                     {'name': 'APO', highscore: 1337},
                     {'name': 'APO', highscore: 1337}
-                ]
+                ],
+		alphabet: ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","y","x","z"],
+		showDefT: '',
             },
             computed: {},
             methods: {
-                updateName(){
+                
+		pullWord: function (){
+			var self = this;
+			$.ajax({
+				url: 'http://urbanpic.mangohacks.com/',
+				type: "GET",
+				
+			}).done(function (data)
+			{
+				console.log(data);
+				self.currentWord = data["term"];
+				self.currentImageUrl = data["gifs"][0];
+//					self.currentImageIndex = 0;
+				self.imagesAvailable = [];
+				for (var i = 0; i<data['gifs'].length;i++)
+				{
+					self.imagesAvailable.push(data["gifs"][i])
+
+				}
+				self.showDefT = data['definition'];
+				self.lettersPicked = [];
+				self.lettersAvailable = [];
+				
+				while (data.letters.length < 12) {
+					data.letters.push(self.alphabet[Math.floor(Math.random() * 26)]);
+				}
+
+				for (var i = 0; i < data.letters.length; i++) {
+					self.lettersAvailable.push({
+						value: data.letters[i],
+						_uid: Math.random()
+					});
+				}
+
+				self.lettersAvailable = shuffle(self.lettersAvailable);
+			});
+			
+		},
+		    
+		    
+		updateName: function(){
                     $('body').attr('v-on:keydown.delete.prevent', 'removeLastFromWord');
                     $('body').attr('v-on:keydown.enter.prevent', 'guess');
                     $('#login').modal('hide');
-                },
+                    this.pullWord();
+		},
                 addToWord: function (index) {
                     /**
                      * Remove from the list of letters available
@@ -222,12 +251,11 @@
                     this.lettersPicked.$remove(this.lettersPicked[index]);
                 },
                 showDef: function () {
-                    this.definition = 'Someone (normally a boy) who flirts intensively with the opposite sex by acting like a prick and follows them round everywhere.';
-
-                    this.totalPoints -= 20;
+		   this.definition = this.showDefT;
+                    this.totalPoints -= 3;
                 },
                 addHint: function () {
-                    var maxHint = 2;
+                    var maxHint = this.imagesAvailable.length;
 
                     // Check if all hints have been used
                     if (this.hintCount >= maxHint
@@ -250,13 +278,11 @@
                         // Not all hints have been used
 
                         // Punish the user for using a hint
-                        this.totalPoints -= 10;
+                        this.totalPoints -= 1;
 
                         this.hintCount++;
 
                         //TODO change this to pull from database
-                        this.imagesAvailable.push("http://i.giphy.com/JVeaR3I5DWoJW.gif");
-
                         this.currentImageUrl = this.imagesAvailable[this.hintCount];
                     }
                 },
@@ -292,11 +318,11 @@
                         this.wordMatches = true;
 
                         // Give reward
-                        this.totalPoints *= 2;
-
+                        this.totalPoints += 10;
+			this.pullWord();
                         // TODO Call success to get next image
                         // Or end the game (if last image)
-
+/*
                         // Change image
                         this.currentImageUrl = 'https://media0.giphy.com/media/feqkVgjJpYtjy/giphy.gif';
 
@@ -310,11 +336,11 @@
                             {value: 'i', _uid: Math.random()}, {value: 'd', _uid: Math.random()},
                             {value: 'l', _uid: Math.random()}, {value: 'o', _uid: Math.random()},
                             {value: 'e', _uid: Math.random()}, {value: 'e', _uid: Math.random()}]);
-                        this.hintMax = false;
-
+  */                      this.hintMax = false;
+			  this.definition = "";
                     } else {
                         // Guess is incorrect
-                        this.totalPoints -= 10;
+                        //this.totalPoints -= 10;
                     }
                 },
                 success: function () {
