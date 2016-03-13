@@ -1,54 +1,60 @@
 <!DOCTYPE>
-<html>
+<html lang="en">
 <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body id="app">
+<body id="app" @keydown.delete.prevent="removeLastFromWord" @keydown.enter.prevent="guess">
 
 <div class="container">
-    <div id="gifNum" class="picNumber">
-        <h1>{{ currentImageIndex }} / {{ totalImageCount }}</h1>
+    <div class="row">
+
+        <div class="col-sm-6 text-info text-left">
+            <h1>{{ currentImageIndex }} / {{ totalImageCount }}</h1>
+        </div>
+
+        <div class="col-sm-6 text-success text-right">
+            <h1>Points: {{ totalPoints }}</h1>
+        </div>
+
     </div>
 
-    <div id="points" class="points">
-        <h1>Points: {{ totalPoints }}</h1>
-    </div>
+    <div class="row">
 
-    <div id="gifContainer" class="gif">
-        <img v-bind:src="currentImageUrl" alt="Gif" class="img-responsive img-rounded">
-    </div>
+        <div id="gif-container" class="col-sm-12 lg">
+            <img v-bind:src="currentImageUrl" id="gif" alt="Gif" class="img-responsive img-rounded center-block">
+        </div>
 
-    <div id="word" class="letter-row">
-        <ul class="list-inline">
-            <li v-for="letter in lettersPicked">
-                <input v-on:click="removeFromWord($index)" track-by="$index" type="button" value="{{ letter }}"
-                       class="letter btn btn-lg btn-primary">
-            </li>
-        </ul>
-    </div>
-
-    <div id="letters" class="letter-row">
-        <ul class=" list-inline">
-            <li v-for="letter in lettersAvailable">
-                <input v-on:click="addToWord($index)" track-by="$index" type="button" value="{{ letter }}"
-                       class="letter btn btn-lg btn-primary">
-            </li>
-        </ul>
     </div>
 
     <div id="button">
 	<button type="button" v-on:click="addHint()"> hints </button>
     </div>
+    <ul id="word" class="list-inline text-capitalize letter-row center-block">
+        <li v-for="letter in lettersPicked">
+            <input v-on:click="removeFromWord($index)" track-by="_uid" type="button" value="{{ letter.value }}"
+                   class="letter btn btn-lg btn-primary text-capitalize"
+            style="border-width: 0;">
+        </li>
+    </ul>
 
+    <ul id="letters" class="list-inline text-capitalize letter-row center-block">
+        <li v-for="letter in lettersAvailable">
+            <input v-on:click="addToWord($index)" track-by="_uid" type="button" value="{{ letter.value }}"
+                   class="letter btn btn-lg btn-primary text-capitalize"
+                   style="border-width: 0;">
+        </li>
+    </ul>
     <div class="winning" v-if="wordMatches">
         You won!
     </div>
 
-                        <!--<div id="controls">-->
-                            <!--<input type="button" v-on:click="shuffle" value="shuffle" class="btn btn-default">-->
-                        <!--</div>-->
+    <div id="controls">
+        <input type="button" v-on:click="guess" value="Guess" class="btn btn-success" title="Try pressing ENTER">
     </div>
+</div>
 
 <script src="./bower_components/jquery/dist/jquery.js"></script>
 <script src="./bower_components/bootstrap/dist/js/bootstrap.js"></script>
@@ -56,6 +62,7 @@
 
 <script type="text/javascript">
     (function () {
+        // Found from stackoverflow
         function shuffle (list) {
             var j, x, i;
             for (i = list.length; i; i -= 1) {
@@ -75,13 +82,19 @@
                 currentImageIndex: 1,
                 totalImageCount: 10,
                 totalPoints: 100,
-                lettersAvailable: shuffle(['o', 'e', 't', 'b', 'b', 'a', 'r', 'q', 'p', 'm', 'c']),
+                lettersAvailable: shuffle([{value: 'o', _uid: Math.random()}, {value: 'e', _uid: Math.random()},
+                    {value: 't', _uid: Math.random()}, {value: 'b', _uid: Math.random()},
+                    {value: 'b', _uid: Math.random()}, {value: 'a', _uid: Math.random()},
+                    {value: 'r', _uid: Math.random()}, {value: 'q', _uid: Math.random()},
+                    {value: 'p', _uid: Math.random()}, {value: 'm', _uid: Math.random()},
+                    {value: 'c', _uid: Math.random()}
+                ]),
                 lettersPicked: [],
                 currentWord: 'cobra',
             	imagesAvailable:  ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif'],
 	 	hintCount: 0,
 		hintFlow: 0
-	 },
+	    },
             computed: {
                 wordMatches: function () {
                     var isCorrect = this.lettersPicked.join('') == this.currentWord;
@@ -112,9 +125,12 @@
                      * Add letter to the guess
                      */
 
+                    // Push letter to letters picked
                     this.lettersPicked.push(this.lettersAvailable[index]);
-                    this.lettersAvailable.splice(index, 1);
-			
+
+                    // Remove letter from letters available
+                    this.lettersAvailable.$remove(this.lettersAvailable[index]);
+
 		    console.log("list: ", this.lettersAvailable);
 		},
                 removeFromWord: function (index) {
@@ -123,8 +139,11 @@
                      * Add letter to the letters available
                      */
 
-                    this.lettersAvailable.push(this.lettersPicked.splice(index, 1));
-                
+                    // Push letter to letters available
+                    this.lettersAvailable.push(this.lettersPicked[index]);
+
+                    // Remove letter from letters picked
+                    this.lettersPicked.$remove(this.lettersPicked[index]);
 		},
 		addHint: function() {
 			//TODO call to add another picture for hint
@@ -143,25 +162,60 @@
 		
 				this.currentImageUrl = this.imagesAvailable[this.hintCount];
 			}
-		}
-                /*,guess: function () {
-                    var word = this.lettersPicked.join('');
+		},
+                removeLastFromWord: function () {
+                    /**
+                     * Remove the last letter from letters guessed
+                     * Add letter to the letters available
+                     */
 
+                    // Check if there have been any letters picked
+                    if (this.lettersPicked.length < 1) {
+                        return;
+                    }
+
+                    // Remove letter from letters picked
+                    var letter = this.lettersPicked.pop();
+
+                    // Push letter to letters available
+                    this.lettersAvailable.push(letter);
+                },
+                guess: function () {
+                    // Get the guessed word
+                    var word = '';
+                    for (var i = 0; i < this.lettersPicked.length; i++) {
+                        word += this.lettersPicked[i].value;
+                    }
+
+                    // Check if the guess is correct
                     if (word == this.currentWord) {
+                        // Guess is correct
+                        this.wordMatches = true;
+
+                        // Give reward
                         this.totalPoints *= 2;
 
                         // TODO Call success to get next image
                         // Or end the game (if last image)
 
+                        // Change image
                         this.currentImageUrl = 'https://media0.giphy.com/media/feqkVgjJpYtjy/giphy.gif';
 
-                        // TODO Reset the letters guessed
+                        // Reset the letters guessed
                         this.lettersPicked = [];
-                        this.lettersAvailable = shuffle(['d', 'e', 'r', 'w', 't', 'd', 'i', 'd', 'l', 'o', 'e']);
+
+                        // Reset the letters available
+                        this.lettersAvailable = shuffle([{value: 'd', _uid: Math.random()},
+                            {value: 'r', _uid: Math.random()}, {value: 'w', _uid: Math.random()},
+                            {value: 't', _uid: Math.random()}, {value: 'd', _uid: Math.random()},
+                            {value: 'i', _uid: Math.random()}, {value: 'd', _uid: Math.random()},
+                            {value: 'l', _uid: Math.random()}, {value: 'o', _uid: Math.random()},
+                            {value: 'e', _uid: Math.random()}, {value: 'e', _uid: Math.random()}]);
                     } else {
+                        // Guess is incorrect
                         this.totalPoints -= 10;
                     }
-                }*/
+                }
             }
         });
     })();
