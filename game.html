@@ -6,17 +6,20 @@
     <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body id="app" >
-<!-- @keydown.delete.prevent="removeLastFromWord" @keydown.enter.prevent="guess" -->
+<body id="app">
 <div class="container">
     <div class="row">
 
-        <div class="col-sm-6 text-info text-left">
-            <h1>{{ currentImageIndex }} / {{ totalImageCount }}</h1>
+        <div class="col-xs-4 text-info text-left">
+            <h3>{{ currentImageIndex }} / {{ totalImageCount }}</h3>
         </div>
 
-        <div class="col-sm-6 text-success text-right">
-            <h1>Points: {{ totalPoints }}</h1>
+        <div class="col-xs-4 text-info text-left text-center">
+            <input type="button" v-on:click="showLeaderboard" class="btn btn-default btn-lg" value="Leaders">
+        </div>
+
+        <div class="col-xs-4 text-success text-right">
+            <h3>{{ totalPoints }}</h3>
         </div>
 
     </div>
@@ -29,60 +32,102 @@
 
     </div>
 
-    <div id="button">
-        <button type="button" class="btn btn-warning" v-on:click="addHint()"> hints</button>
-    </div>
 
-    <div id="dic">
-        <button type="button" class="btn btn-warning" v-on:click="showDef()"> Definition</button>
+    <div id="controls">
+        <div class="row">
+            <div class="col-xs-4">
+                <input type="button" v-on:click="addHint" class="btn btn-info btn-block" value="Hint">
+            </div>
+            <div class="col-xs-4">
+                <input type="button" v-on:click="showDef" class="btn btn-warning btn-block" value="Define">
+            </div>
+            <div class="col-xs-4">
+                <input type="button" v-on:click="guess" class="btn btn-success btn-block" value="Guess">
+            </div>
+        </div>
     </div>
 
     <div id="def">
-        <h2> {{definition}}</h2>
+        <h2> {{ definition }}</h2>
     </div>
+
     <ul id="word" class="list-inline text-capitalize letter-row center-block">
         <li v-for="letter in lettersPicked">
             <input v-on:click="removeFromWord($index)" track-by="_uid" type="button" value="{{ letter.value }}"
-                   class="letter btn btn-lg btn-primary text-capitalize">
+                   class="letter btn btn-primary text-capitalize">
         </li>
     </ul>
 
     <ul id="letters" class="list-inline text-capitalize letter-row center-block">
         <li v-for="letter in lettersAvailable">
             <input v-on:click="addToWord($index)" track-by="_uid" type="button" value="{{ letter.value }}"
-                   class="letter btn btn-lg btn-primary text-capitalize">
+                   class="letter btn btn-primary text-capitalize">
         </li>
     </ul>
     <div class="winning" v-if="wordMatches">
         You won!
     </div>
 
-    <div id="controls">
-        <input type="button" v-on:click="guess" value="Guess" class="btn btn-success" title="Try pressing ENTER">
+    <!-- Leadboard modal -->
+    <div id="leaderboard" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Leadboard</h4>
+                </div>
+                <div class="modal-body">
+
+                    <table class="table table-striped">
+
+                        <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Highscore</th>
+                        </tr>
+                        </thead>
+                        <tbody v-for="user in leaderboard">
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.highscore }}</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
-	<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-		<h4 class="modal-title">Modal title</h4>
-	      </div>
-	      <div class="modal-body">
-		      <div class="modal-footer">
-			<input type="text" class="" v-model="userID">
-			{{userID}}
-		      </div>
-		      <div class="modal-footer">
-			<button type="button" class="btn btn-primary" v-on:click="updateName">Save changes</button>
-		      </div>
-		</div>
-	    </div><!-- /.modal-content -->
-	  </div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->
+
+    <!-- Log in modal -->
+    <div id="login" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Pick a name</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" v-model="userID" placeholder="Name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" v-on:click="updateName">Play</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="./bower_components/jquery/dist/jquery.js"></script>
 <script src="./bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="./node_modules/vue/dist/vue.js"></script>
+<script src="./js/parse.js"></script>
 
 <script type="text/javascript">
     (function () {
@@ -128,46 +173,30 @@
                     {value: 't', _uid: Math.random()}, {value: 'b', _uid: Math.random()},
                     {value: 'b', _uid: Math.random()}, {value: 'a', _uid: Math.random()},
                     {value: 'r', _uid: Math.random()}, {value: 'q', _uid: Math.random()},
-                    {value: 'p', _uid: Math.random()}, {value: 'm', _uid: Math.random()},
-                    {value: 'c', _uid: Math.random()}
+                    {value: 'p', _uid: Math.random()}, {value: 'c', _uid: Math.random()}
                 ]),
                 lettersPicked: [],
                 currentWord: 'cobra',
-            	imagesAvailable:  ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif', 'http://i.giphy.com/RIqeTzCELqASY.gif'],
-	 	hintCount: 0,
-		hintMax: false,
-		definition: '',
-		userID: "tmp"
-	    },
-            computed: {
-                wordMatches: function () {
-                    var isCorrect = this.lettersPicked.join('') == this.currentWord;
-
-                    var word = this.lettersPicked.join('');
-
-                    if (word == this.currentWord) {
-                        this.totalPoints *= 2;
-
-                        // TODO Call success to get next image
-                        // Or end the game (if last image)
-
-                        this.currentImageUrl = 'https://media0.giphy.com/media/feqkVgjJpYtjy/giphy.gif';
-
-                        // TODO Reset the letters guessed
-                        this.lettersPicked = [];
-                        this.lettersAvailable = shuffle(['d', 'e', 'r', 'w', 't', 'd', 'i', 'd', 'l', 'o', 'e']);
-                    } else {
-                        this.totalPoints -= 10;
-                    }
-
-                }
+                imagesAvailable: ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif', 'http://i.giphy.com/RIqeTzCELqASY.gif'],
+                hintCount: 0,
+                hintMax: false,
+                definition: '',
+                userID: '',
+                leaderboard: [
+                    {'name': 'APO', highscore: 1337},
+                    {'name': 'APO', highscore: 1337},
+                    {'name': 'APO', highscore: 1337},
+                    {'name': 'APO', highscore: 1337},
+                    {'name': 'APO', highscore: 1337}
+                ]
             },
+            computed: {},
             methods: {
-		updateName(){
-			$('body').attr('v-on:keydown.delete.prevent', 'removeLastFromWord');
-			$('body').attr('v-on:keydown.enter.prevent', 'guess');
-			$('#myModal').modal('hide');
-		},
+                updateName(){
+                    $('body').attr('v-on:keydown.delete.prevent', 'removeLastFromWord');
+                    $('body').attr('v-on:keydown.enter.prevent', 'guess');
+                    $('#login').modal('hide');
+                },
                 addToWord: function (index) {
                     /**
                      * Remove from the list of letters available
@@ -179,8 +208,6 @@
 
                     // Remove letter from letters available
                     this.lettersAvailable.$remove(this.lettersAvailable[index]);
-
-                    console.log("list: ", this.lettersAvailable);
                 },
                 removeFromWord: function (index) {
                     /**
@@ -195,57 +222,38 @@
                     this.lettersPicked.$remove(this.lettersPicked[index]);
                 },
                 showDef: function () {
+                    this.definition = 'Someone (normally a boy) who flirts intensively with the opposite sex by acting like a prick and follows them round everywhere.';
 
-                    this.definition = "this is a definition";
+                    this.totalPoints -= 20;
                 },
                 addHint: function () {
-                    //TODO call to add another picture for hint
-                    maxHint = 2;
-                    console.log("here1");
+                    var maxHint = 2;
 
-                    if (this.hintCount >= maxHint && this.hintMax == false) {
-                        console.log("in if");
+                    // Check if all hints have been used
+                    if (this.hintCount >= maxHint
+                            && !this.hintMax) {
                         this.hintMax = true;
                         this.hintCount = 0;
                     }
 
-                    console.log(this.hintCount);
-                    if (this.hintMax == true) {
-                        console.log("hit Max");
-                        this.currentImageUrl = this.imagesAvailable[this.hintCount];
-                        this.hintCount++;
-                        if (this.hintCount >= this.imagesAvailable.length - 1)
+                    if (this.hintMax) {
+                        // All hints have been used
+
+                        // Loop back to first image
+                        this.currentImageUrl = this.imagesAvailable[hintCount];
+
+                        // Check
+                        if (this.hintCount >= this.imagesAvailable.length - 1) {
                             this.hintCount = 0;
+                        }
+                    } else {
+                        // Not all hints have been used
 
-                    }
-                    else {
+                        // Punish the user for using a hint
+                        this.totalPoints -= 10;
+
                         this.hintCount++;
-                        //TODO change this to pull from database
-                        this.imagesAvailable.push("http://i.giphy.com/JVeaR3I5DWoJW.gif");
 
-                        this.currentImageUrl = this.imagesAvailable[this.hintCount];
-                    }
-                },
-                addHint: function () {
-                    //TODO call to add another picture for hint
-                    maxHint = 2;
-                    console.log("here1");
-
-                    if (this.hintCount >= maxHint && this.hintMax == false) {
-                        this.hintMax = true;
-                        this.hintCount = 0;
-                    }
-
-                    console.log(this.hintCount);
-                    if (this.hintMax == true) {
-                        this.currentImageUrl = this.imagesAvailable[this.hintCount];
-                        this.hintCount++;
-                        if (this.hintCount >= this.imagesAvailable.length - 1)
-                            this.hintCount = 0;
-
-                    }
-                    else {
-                        this.hintCount++;
                         //TODO change this to pull from database
                         this.imagesAvailable.push("http://i.giphy.com/JVeaR3I5DWoJW.gif");
 
@@ -278,6 +286,8 @@
 
                     // Check if the guess is correct
                     if (word == this.currentWord) {
+                        this.success();
+
                         // Guess is correct
                         this.wordMatches = true;
 
@@ -306,6 +316,21 @@
                         // Guess is incorrect
                         this.totalPoints -= 10;
                     }
+                },
+                success: function () {
+                    // Check if this was the last image
+                    if (this.currentImageIndex == this.totalImageCount) {
+                        // The game is over
+
+                        return;
+                    }
+
+                    // Go to the next image
+                    this.currentImageIndex++;
+                    this.currentImageUrl = this.imagesAvailable[this.currentImageIndex];
+                },
+                showLeaderboard: function () {
+                    $('#leaderboard').modal('show');
                 }
             }
         });

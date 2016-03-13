@@ -1,5 +1,10 @@
+.container {
+    margin-top: 2rem;
+}
+
 #gif {
-    margin-top: 5rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
 }
 
 .letter-row {
@@ -7,12 +12,12 @@
     margin-top: 0;
 
     font-size: 0;
-    min-height: 10rem;
+    min-height: 7.5rem;
 }
 
 .letter {
-    padding: 2rem;
-    font-size: 2rem;
+    padding: 1.5rem;
+    font-size: 1.5rem;
     font-family: monospace;
-    margin: 2rem auto;
+    margin: 1.5rem auto;
 }
