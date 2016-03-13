@@ -8,6 +8,9 @@ Session.vim
 .netrwhist
 *~
 
+### Bower
+bower_components/
+
 ### Node
 # Logs
 logs
