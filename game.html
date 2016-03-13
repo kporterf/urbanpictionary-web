@@ -6,8 +6,7 @@
     <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body id="app" @keydown.delete.prevent="removeLastFromWord" @keydown.enter.prevent="guess">
-
+<body id="app">
 <div class="container">
     <div class="row">
 
@@ -48,7 +47,6 @@
         </div>
     </div>
 
-
     <div id="def">
         <h2> {{ definition }}</h2>
     </div>
@@ -70,6 +68,7 @@
         You won!
     </div>
 
+    <!-- Leadboard modal -->
     <div id="leaderboard" class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -107,6 +106,22 @@
         </div>
     </div>
 
+    <!-- Log in modal -->
+    <div id="login" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Pick a name</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" v-model="userID" placeholder="Name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" v-on:click="updateName">Play</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="./bower_components/jquery/dist/jquery.js"></script>
@@ -128,6 +143,10 @@
             return list;
         }
 
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#login').modal('show')
+        });
+
         new Vue({
             el: '#app',
             data: {
@@ -147,6 +166,7 @@
                 hintCount: 0,
                 hintMax: false,
                 definition: '',
+                userID: '',
                 leaderboard: [
                     {'name': 'APO', highscore: 1337},
                     {'name': 'APO', highscore: 1337},
@@ -157,6 +177,11 @@
             },
             computed: {},
             methods: {
+                updateName(){
+                    $('body').attr('v-on:keydown.delete.prevent', 'removeLastFromWord');
+                    $('body').attr('v-on:keydown.enter.prevent', 'guess');
+                    $('#login').modal('hide');
+                },
                 addToWord: function (index) {
                     /**
                      * Remove from the list of letters available
