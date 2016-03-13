@@ -91,9 +91,9 @@
                 ]),
                 lettersPicked: [],
                 currentWord: 'cobra',
-            	imagesAvailable:  ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif'],
+            	imagesAvailable:  ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif', 'http://i.giphy.com/RIqeTzCELqASY.gif'],
 	 	hintCount: 0,
-		hintFlow: 0
+		hintMax: false,
 	    },
             computed: {
                 wordMatches: function () {
@@ -147,12 +147,25 @@
 		},
 		addHint: function() {
 			//TODO call to add another picture for hint
-			maxHint = 3;
+			maxHint = 2;
 			console.log("here1");
 			
-			if (this.hintCount == maxHint)
+			if (this.hintCount >= maxHint && this.hintMax == false)
 			{
-					
+				console.log("in if");
+				this.hintMax = true;
+				this.hintCount = 0;
+			}
+
+			console.log(this.hintCount);
+			if (this.hintMax == true)
+			{
+				console.log("hit Max");
+				this.currentImageUrl = this.imagesAvailable[this.hintCount];
+				this.hintCount++;
+				if (this.hintCount >= this.imagesAvailable.length-1)
+					this.hintCount = 0;
+
 			}
 			else
 			{
@@ -211,7 +224,9 @@
                             {value: 'i', _uid: Math.random()}, {value: 'd', _uid: Math.random()},
                             {value: 'l', _uid: Math.random()}, {value: 'o', _uid: Math.random()},
                             {value: 'e', _uid: Math.random()}, {value: 'e', _uid: Math.random()}]);
-                    } else {
+                    	this.hintMax = false;
+
+		    } else {
                         // Guess is incorrect
                         this.totalPoints -= 10;
                     }
