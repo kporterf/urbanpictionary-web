@@ -102,8 +102,22 @@
 	document.addEventListener('DOMContentLoaded', function () {
 		$('#myModal').modal('show')
 	});
-	
-        new Vue({
+	function pullWord(){
+			$.ajax({
+				url: 'http://urbanpic.mangohacks.com/',
+				type: "GET",
+				
+				}).done(function (data)
+				{
+					console.log("data", data);
+				
+			});
+		
+		
+		};
+        
+	pullWord();
+	new Vue({
             el: '#app',
             data: {
                 currentImageUrl: 'http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif',
