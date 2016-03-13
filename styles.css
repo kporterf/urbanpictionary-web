@@ -1,27 +1,18 @@
-.picNumber {
-    color: red;
-    margin: 30px;
-}
-
-.points {
-
-    color: blue;
-    margin: 30px;
-}
-
-.gif {
-    top: 100px;
-    /*display: flex;
-    justify-content: center;
-    align-content=center;
-*/
+#gif {
+    margin-top: 5rem;
 }
 
 .letter-row {
-    min-height: 5rem;
-    margin: 2rem auto;
+    margin-bottom: 0;
+    margin-top: 0;
+
+    font-size: 0;
+    min-height: 10rem;
 }
 
 .letter {
+    padding: 2rem;
+    font-size: 2rem;
     font-family: monospace;
+    margin: 2rem auto;
 }
