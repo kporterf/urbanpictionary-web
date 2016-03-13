@@ -44,9 +44,9 @@
             <div class="col-xs-4">
                 <input type="button" v-on:click="guess" class="btn btn-success btn-block" value="Guess">
             </div>
-	    <div class="col-xs-4">
-		<input type="button" v-on:click="skipF" class="btn btn-danger btn-block" value="Skip">
-	    </div>
+            <div class="col-xs-4">
+                <input type="button" v-on:click="skipF" class="btn btn-danger btn-block" value="Skip">
+            </div>
         </div>
     </div>
 
@@ -181,9 +181,9 @@
                     {'name': 'APO', highscore: 1337},
                     {'name': 'APO', highscore: 1337}
                 ],
-		alphabet: ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","y","x","z"],
-		showDefT: '',
-		skip: false
+                alphabet: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "y", "x", "z"],
+                showDefT: '',
+                skip: false
             },
             computed: {},
             methods: {
@@ -307,11 +307,11 @@
                     // Push letter to letters available
                     this.lettersAvailable.push(letter);
                 },
-		skipF: function(){
-			this.skip = true;
-			this.totalPoints -=150;
-			this.guess();
-		},
+                skipF: function () {
+                    this.skip = true;
+                    this.totalPoints -= 150;
+                    this.guess();
+                },
 
 
                 guess: function () {
@@ -325,13 +325,13 @@
                     if (word == this.currentWord || this.skip == true) {
                         this.success();
 
-			this.skip=false;
+                        this.skip = false;
 
                         // Guess is correct
                         this.wordMatches = true;
 
                         // Give reward
-                        this.totalPoints *= 2;
+                        this.totalPoints += 10;
                         this.pullWord();
                         // TODO Call success to get next image
                         // Or end the game (if last image)
@@ -369,7 +369,10 @@
                             self.leaderboard = [];
 
                             for (var i = 0; i < scores.length; i++) {
-                                self.leaderboard.push({name: scores[i].get('userID'), highscore: scores[i].get('highScore')});
+                                self.leaderboard.push({
+                                    name: scores[i].get('userID'),
+                                    highscore: scores[i].get('highScore')
+                                });
                             }
                         }
                     });
