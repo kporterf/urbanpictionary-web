@@ -30,7 +30,7 @@
     </div>
 
     <div id="button">
-	<button type="button" v-on:click="addHint()"> hints </button>
+        <button type="button" v-on:click="addHint()"> hints</button>
     </div>
     
     <div id="dic">
@@ -43,16 +43,14 @@
     <ul id="word" class="list-inline text-capitalize letter-row center-block">
         <li v-for="letter in lettersPicked">
             <input v-on:click="removeFromWord($index)" track-by="_uid" type="button" value="{{ letter.value }}"
-                   class="letter btn btn-lg btn-primary text-capitalize"
-            style="border-width: 0;">
+                   class="letter btn btn-lg btn-primary text-capitalize">
         </li>
     </ul>
 
     <ul id="letters" class="list-inline text-capitalize letter-row center-block">
         <li v-for="letter in lettersAvailable">
             <input v-on:click="addToWord($index)" track-by="_uid" type="button" value="{{ letter.value }}"
-                   class="letter btn btn-lg btn-primary text-capitalize"
-                   style="border-width: 0;">
+                   class="letter btn btn-lg btn-primary text-capitalize">
         </li>
     </ul>
     <div class="winning" v-if="wordMatches">
@@ -107,7 +105,7 @@
             computed: {
                 wordMatches: function () {
                     var isCorrect = this.lettersPicked.join('') == this.currentWord;
-                
+
                     var word = this.lettersPicked.join('');
 
                     if (word == this.currentWord) {
@@ -124,8 +122,8 @@
                     } else {
                         this.totalPoints -= 10;
                     }
-		    
-		}
+
+                }
             },
             methods: {
                 addToWord: function (index) {
@@ -134,21 +132,21 @@
                      * Add letter to the guess
                      */
 
-                    // Push letter to letters picked
+                        // Push letter to letters picked
                     this.lettersPicked.push(this.lettersAvailable[index]);
 
                     // Remove letter from letters available
                     this.lettersAvailable.$remove(this.lettersAvailable[index]);
 
-		    console.log("list: ", this.lettersAvailable);
-		},
+                    console.log("list: ", this.lettersAvailable);
+                },
                 removeFromWord: function (index) {
                     /**
                      * Remove from the list of letters guessed
                      * Add letter to the letters available
                      */
 
-                    // Push letter to letters available
+                        // Push letter to letters available
                     this.lettersAvailable.push(this.lettersPicked[index]);
 
                     // Remove letter from letters picked
@@ -188,7 +186,35 @@
 		
 				this.currentImageUrl = this.imagesAvailable[this.hintCount];
 			}
-		},
+                },
+                addHint: function () {
+                    //TODO call to add another picture for hint
+                    maxHint = 2;
+                    console.log("here1");
+
+                    if (this.hintCount >= maxHint && this.hintMax == false) {
+                        console.log("in if");
+                        this.hintMax = true;
+                        this.hintCount = 0;
+                    }
+
+                    console.log(this.hintCount);
+                    if (this.hintMax == true) {
+                        console.log("hit Max");
+                        this.currentImageUrl = this.imagesAvailable[this.hintCount];
+                        this.hintCount++;
+                        if (this.hintCount >= this.imagesAvailable.length - 1)
+                            this.hintCount = 0;
+
+                    }
+                    else {
+                        this.hintCount++;
+                        //TODO change this to pull from database
+                        this.imagesAvailable.push("http://i.giphy.com/JVeaR3I5DWoJW.gif");
+
+                        this.currentImageUrl = this.imagesAvailable[this.hintCount];
+                    }
+                },
                 removeLastFromWord: function () {
                     /**
                      * Remove the last letter from letters guessed
@@ -237,9 +263,9 @@
                             {value: 'i', _uid: Math.random()}, {value: 'd', _uid: Math.random()},
                             {value: 'l', _uid: Math.random()}, {value: 'o', _uid: Math.random()},
                             {value: 'e', _uid: Math.random()}, {value: 'e', _uid: Math.random()}]);
-                    	this.hintMax = false;
+                        this.hintMax = false;
 
-		    } else {
+                    } else {
                         // Guess is incorrect
                         this.totalPoints -= 10;
                     }
