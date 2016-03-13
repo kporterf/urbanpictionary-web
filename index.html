@@ -363,7 +363,7 @@
                     var Leaderboard = Parse.Object.extend("Leaderboard");
 
                     var scoreQuery = new Parse.Query(Leaderboard);
-                    scoreQuery.ascending('highScore').limit(5);
+                    scoreQuery.descending('highScore').limit(5);
                     scoreQuery.find({
                         success: function (scores) {
                             self.leaderboard = [];
@@ -424,8 +424,7 @@
                                         // Make new score
                                         score = new Leaderboard();
 
-                                        // Cast score to string for Parse
-                                        score.set('highScore', '' + self.totalPoints);
+                                        score.set('highScore', self.totalPoints);
 
                                         score.set('userID', self.userID);
                                     } else {
@@ -433,7 +432,7 @@
                                         score = scores[0];
 
                                         // Cast score to string for Parse
-                                        score.set('highScore', '' + self.totalPoints);
+                                        score.set('highScore', self.totalPoints);
                                     }
 
                                     // Save score
