@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body id="app" @keydown.delete.prevent="removeLastFromWord" @keydown.enter.prevent="guess">
-
+<body id="app" >
+<!-- @keydown.delete.prevent="removeLastFromWord" @keydown.enter.prevent="guess" -->
 <div class="container">
     <div class="row">
 
@@ -60,6 +60,24 @@
     <div id="controls">
         <input type="button" v-on:click="guess" value="Guess" class="btn btn-success" title="Try pressing ENTER">
     </div>
+	<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+		<h4 class="modal-title">Modal title</h4>
+	      </div>
+	      <div class="modal-body">
+		      <div class="modal-footer">
+			<input type="text" class="" v-model="userID">
+			{{userID}}
+		      </div>
+		      <div class="modal-footer">
+			<button type="button" class="btn btn-primary" v-on:click="updateName">Save changes</button>
+		      </div>
+		</div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 </div>
 
 <script src="./bower_components/jquery/dist/jquery.js"></script>
@@ -79,8 +97,12 @@
             }
 
             return list;
-        }
-
+	}
+	
+	document.addEventListener('DOMContentLoaded', function () {
+		$('#myModal').modal('show')
+	});
+	
         new Vue({
             el: '#app',
             data: {
@@ -100,7 +122,8 @@
             	imagesAvailable:  ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif', 'http://i.giphy.com/RIqeTzCELqASY.gif'],
 	 	hintCount: 0,
 		hintMax: false,
-		definition: ''
+		definition: '',
+		userID: "tmp"
 	    },
             computed: {
                 wordMatches: function () {
@@ -126,6 +149,11 @@
                 }
             },
             methods: {
+		updateName(){
+			$('body').attr('v-on:keydown.delete.prevent', 'removeLastFromWord');
+			$('body').attr('v-on:keydown.enter.prevent', 'guess');
+			$('#myModal').modal('hide');
+		},
                 addToWord: function (index) {
                     /**
                      * Remove from the list of letters available
@@ -193,14 +221,12 @@
                     console.log("here1");
 
                     if (this.hintCount >= maxHint && this.hintMax == false) {
-                        console.log("in if");
                         this.hintMax = true;
                         this.hintCount = 0;
                     }
 
                     console.log(this.hintCount);
                     if (this.hintMax == true) {
-                        console.log("hit Max");
                         this.currentImageUrl = this.imagesAvailable[this.hintCount];
                         this.hintCount++;
                         if (this.hintCount >= this.imagesAvailable.length - 1)
