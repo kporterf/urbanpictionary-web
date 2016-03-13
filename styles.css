@@ -1,15 +1,12 @@
 .picNumber {
 	color: red;
 	margin: 30px;
-	align: right;
-
 }
 
 .points {
 	
 	color: blue;
 	margin: 30px;
-	align: left;
 }
 
 .gif {
@@ -18,4 +15,13 @@
 	justify-content: center;
 	align-content=center;
 */
+}
+
+.letter-row {
+	min-height: 5rem;
+	margin: 2rem auto;
+}
+
+.letter {
+	font-family: monospace;
 }
