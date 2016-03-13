@@ -345,6 +345,22 @@
                     this.currentImageUrl = this.imagesAvailable[this.currentImageIndex];
                 },
                 showLeaderboard: function () {
+                    var self = this;
+
+                    var Leaderboard = Parse.Object.extend("Leaderboard");
+
+                    var scoreQuery = new Parse.Query(Leaderboard);
+                    scoreQuery.ascending('highScore').limit(5);
+                    scoreQuery.find({
+                        success: function (scores) {
+                            self.leaderboard = [];
+
+                            for (var i = 0; i < scores.length; i++) {
+                                self.leaderboard.push({name: scores[i].get('userID'), highscore: scores[i].get('highScore')});
+                            }
+                        }
+                    });
+
                     $('#leaderboard').modal('show');
                 },
                 updateOnlineScore: function () {
@@ -358,7 +374,7 @@
                     var Leaderboard = Parse.Object.extend("Leaderboard");
 
                     // Find Player with this username
-                    var playerQuery = new Parse.Query(Player);
+                    var playerQuery = new Parse.Query(Leaderboard);
                     playerQuery.equalTo('userID', self.userID);
                     playerQuery.find({
                         success: function (players) {
@@ -368,7 +384,7 @@
                                 // No players found
 
                                 // Make new player
-                                player = new Player();
+                                player = new Leaderboard();
 
                                 // User their username
                                 player.set('userID', self.userID);
@@ -384,7 +400,7 @@
 
                             // Find this player's score
                             var scoreQuery = new Parse.Query(Leaderboard);
-                            scoreQuery.equalTo('userID', player);
+                            scoreQuery.equalTo('userID', self.userID);
                             scoreQuery.find({
                                 success: function (scores) {
                                     var score;
@@ -398,7 +414,7 @@
                                         // Cast score to string for Parse
                                         score.set('highScore', '' + self.totalPoints);
 
-                                        score.set('userID', player);
+                                        score.set('userID', self.userID);
                                     } else {
                                         // Update existing score
                                         score = scores[0];
