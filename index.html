@@ -8,7 +8,7 @@
 </head>
 <body id="app">
 <div class="container">
-    <div class="row">
+    <div class="row" v-if="isPlaying">
 
         <div class="col-xs-4 text-info text-left">
             <h3>{{ currentImageIndex }} / {{ totalImageCount }}</h3>
@@ -24,7 +24,7 @@
 
     </div>
 
-    <div class="row">
+    <div class="row" v-if="isPlaying">
 
         <div id="gif-container" class="col-sm-12 lg">
             <img v-bind:src="currentImageUrl" id="gif" alt="Gif" class="img-responsive img-rounded center-block">
@@ -33,7 +33,7 @@
     </div>
 
 
-    <div id="controls">
+    <div id="controls" v-if="isPlaying">
         <div class="row">
             <div class="col-xs-4">
                 <input type="button" v-on:click="addHint" class="btn btn-info btn-block" value="Hint">
@@ -157,39 +157,33 @@
         new Vue({
             el: '#app',
             data: {
-                currentImageUrl: 'http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif',
+                currentImageUrl: '',
                 currentImageIndex: 1,
                 totalImageCount: 10,
                 totalPoints: 150,
-                lettersAvailable: shuffle([{value: 'o', _uid: Math.random()}, {value: 'e', _uid: Math.random()},
-                    {value: 't', _uid: Math.random()}, {value: 'b', _uid: Math.random()},
-                    {value: 'b', _uid: Math.random()}, {value: 'a', _uid: Math.random()},
-                    {value: 'r', _uid: Math.random()}, {value: 'q', _uid: Math.random()},
-                    {value: 'p', _uid: Math.random()}, {value: 'c', _uid: Math.random()}
-                ]),
+                lettersAvailable: [],
                 lettersPicked: [],
                 currentWord: '',
-                imagesAvailable: ['http://media2.giphy.com/media/FiGiRei2ICzzG/giphy.gif', 'http://i.giphy.com/RIqeTzCELqASY.gif'],
+                imagesAvailable: [],
                 hintCount: 0,
                 hintMax: false,
                 definition: '',
                 userID: '',
-                leaderboard: [
-                    {'name': 'APO', highscore: 1337},
-                    {'name': 'APO', highscore: 1337},
-                    {'name': 'APO', highscore: 1337},
-                    {'name': 'APO', highscore: 1337},
-                    {'name': 'APO', highscore: 1337}
-                ],
+                leaderboard: [],
                 alphabet: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "y", "x", "z"],
                 showDefT: '',
-                skip: false
+                skip: false,
+                isPlaying: false
             },
             computed: {},
             methods: {
-
                 pullWord: function () {
+                    /**
+                     * Get word from the API
+                     */
+
                     var self = this;
+
                     $.ajax({
                         url: 'http://urbanpic.mangohacks.com/',
                         type: "GET"
@@ -220,15 +214,18 @@
 
                         self.lettersAvailable = shuffle(self.lettersAvailable);
                     });
-
                 },
-
-
                 updateName: function () {
+                    /**
+                     * Update the player's username
+                     */
+
                     $('body').attr('v-on:keydown.delete.prevent', 'removeLastFromWord');
                     $('body').attr('v-on:keydown.enter.prevent', 'guess');
                     $('#login').modal('hide');
                     this.pullWord();
+
+                    this.isPlaying = true;
                 },
                 addToWord: function (index) {
                     /**
@@ -312,8 +309,6 @@
                     this.totalPoints -= 150;
                     this.guess();
                 },
-
-
                 guess: function () {
                     // Get the guessed word
                     var word = '';
